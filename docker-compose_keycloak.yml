@@ -1,0 +1,29 @@
+version: "3"
+services:
+  postgres-keycloak:
+      image: postgres:latest
+      volumes:
+        - ./postgres_data_keycloak:/var/lib/postgresql/data
+      environment:
+        POSTGRES_DB: keycloak
+        POSTGRES_USER: keycloak
+        POSTGRES_PASSWORD: keycloak
+      ports:
+        - 5433:5432
+
+  keycloak:
+      image: jboss/keycloak:latest
+      environment:
+        DB_ADDR: postgres-keycloak
+        DB_PORT: 5432
+        DB_VENDOR: POSTGRES
+        DB_DATABASE: keycloak
+        DB_USER: keycloak
+        DB_SCHEMA: public
+        DB_PASSWORD: keycloak
+        KEYCLOAK_USER: admin
+        KEYCLOAK_PASSWORD: admin
+      ports:
+        - 9090:8080
+      depends_on:
+        - postgres-keycloak
