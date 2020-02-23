@@ -1,13 +1,63 @@
 version: "3"
 services:
-  mongo:
+  mongo0:
     image: mongo:latest
-    container_name: mongo
+    container_name: mongo0
+    entrypoint: [ "/usr/bin/mongod", "--bind_ip_all", "--replSet", "rs0" ]
+    links:
+      - "mongo1:mongo1"
+      - "mongo2:mongo2"
     environment:
-      MONGO_INITDB_ROOT_USERNAME: admin
-      MONGO_INITDB_ROOT_PASSWORD: admin
+      - MONGO_INITDB_ROOT_USERNAME=admin
+      - MONGO_INITDB_ROOT_PASSWORD=admin
+      - MONGO_INITDB_DATABASE=mongo
+      - MONGO_NON_ROOT_USERNAME=user
+      - MONGO_NON_ROOT_PASSWORD=user
+    expose:
+        - "27017"
+        - "27018"
+        - "27019"
     ports:
       - "27017:27017"
     volumes:
-      - ./mongo-data:/data/db
-      - ./mongo-db-config:/data/configdb
+      - ./mongo-data-0:/data/db
+      - ./mongo-db-config-0:/data/configdb
+      - ./init-mongo.js:/docker-entrypoint-initdb.d/init-mongo.js
+
+  mongo1:
+    image: mongo:latest
+    container_name: mongo1
+    entrypoint: [ "/usr/bin/mongod", "--bind_ip_all", "--replSet", "rs0" ]
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=admin
+      - MONGO_INITDB_ROOT_PASSWORD=admin
+      - MONGO_INITDB_DATABASE=mongo
+      - MONGO_NON_ROOT_USERNAME=user
+      - MONGO_NON_ROOT_PASSWORD=user
+    expose:
+        - "27017"
+    ports:
+      - "27018:27017"
+    volumes:
+      - ./mongo-data-1:/data/db
+      - ./mongo-db-config-1:/data/configdb
+      - ./init-mongo.js:/docker-entrypoint-initdb.d/init-mongo.js
+
+  mongo2:
+    image: mongo:latest
+    container_name: mongo2
+    entrypoint: [ "/usr/bin/mongod", "--bind_ip_all", "--replSet", "rs0" ]
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=admin
+      - MONGO_INITDB_ROOT_PASSWORD=admin
+      - MONGO_INITDB_DATABASE=mongo
+      - MONGO_NON_ROOT_USERNAME=user
+      - MONGO_NON_ROOT_PASSWORD=user
+    expose:
+        - "27017"
+    ports:
+      - "27019:27017"
+    volumes:
+      - ./mongo-data-2:/data/db
+      - ./mongo-db-config-2:/data/configdb
+      - ./init-mongo.js:/docker-entrypoint-initdb.d/init-mongo.js
